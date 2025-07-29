@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛡️ BlueAI - Siber Güvenlik Asistanı</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-shield-alt"></i> BlueAI</h1>
+                <p>Siber Güvenlik Asistanı</p>
+                <div class="model-info">
+                    <span>Model: SenecaLLM_x_Qwen2.5-7B | Adapted for BlueAI</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab('general')">
+                    <i class="fas fa-comments"></i> Genel Soru
+                </button>
+                <button class="tab-button" onclick="showTab('incident')">
+                    <i class="fas fa-search"></i> Olay Müdahale
+                </button>
+            </div>
+
+            <div class="tab-content" id="general-tab">
+                <form method="post" action="/ask" class="question-form">
+                    <div class="form-group">
+                        <label for="general-question">
+                            <i class="fas fa-lock"></i> Sorunuz:
+                        </label>
+                        <textarea 
+                            id="general-question" 
+                            name="question" 
+                            rows="6" 
+                            placeholder="Siber güvenlik ile ilgili sorunuzu buraya yazın..."
+                            required
+                        >{% if question_type == 'general' %}{{ question }}{% endif %}</textarea>
+                    </div>
+                    <input type="hidden" name="question_type" value="general">
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i> Yanıtla
+                    </button>
+                </form>
+            </div>
+
+            <div class="tab-content" id="incident-tab" style="display: none;">
+                <form method="post" action="/ask" class="question-form">
+                    <div class="form-group">
+                        <label for="incident-question">
+                            <i class="fas fa-exclamation-triangle"></i> Şüpheli olay/gözlem giriniz:
+                        </label>
+                        <textarea 
+                            id="incident-question" 
+                            name="question" 
+                            rows="6" 
+                            placeholder="Şüpheli aktivite, log kayıtları veya güvenlik olayını detaylı olarak açıklayın..."
+                            required
+                        >{% if question_type == 'incident' %}{{ question }}{% endif %}</textarea>
+                    </div>
+                    <input type="hidden" name="question_type" value="incident">
+                    <button type="submit" class="submit-btn incident-btn">
+                        <i class="fas fa-search"></i> Analiz Et
+                    </button>
+                </form>
+            </div>
+
+            {% if answer %}
+            <div class="answer-section">
+                <h3>
+                    <i class="fas fa-robot"></i> 
+                    {% if question_type == 'incident' %}Olay Analizi{% else %}Yanıt{% endif %}
+                </h3>
+                <div class="answer-content">
+                    {{ answer | replace('**', '<strong>') | replace('**', '</strong>') | replace('\n', '<br>') | replace('```', '<code>') | replace('```', '</code>') | safe }}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if error %}
+            <div class="error-section">
+                <h3><i class="fas fa-exclamation-circle"></i> Hata</h3>
+                <div class="error-content">
+                    {{ error }}
+                </div>
+            </div>
+            {% endif %}
+        </main>
+
+        <footer class="footer">
+            <p>BlueAI © 2025 | Siber Güvenlik Danışmanlığı</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', path='/script.js') }}"></script>
+</body>
+</html>
